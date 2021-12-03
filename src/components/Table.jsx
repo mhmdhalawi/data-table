@@ -7,10 +7,11 @@ import { useStore } from '../store';
 
 export const Table = ({ photos }) => {
   const [rows, setRows] = useState(photos);
-  let selected;
-  let toggleUpdateRow = false;
 
   const [toggleUpdateRows, setToggleUpdateRows] = useState(true);
+  const [toggleRow, setToggleRow] = useState(false);
+  const [newIndex, setNewIndex] = useState(null);
+  const [rowInterval, setRowInterval] = useState();
 
   const [editId, setEditId] = useState('');
 
@@ -20,19 +21,31 @@ export const Table = ({ photos }) => {
     if (params.field !== 'id' && params.field !== 'albumId') {
       return;
     }
-    if (toggleUpdateRow === true) toggleUpdateRow = false;
-    else toggleUpdateRow = true;
+    setNewIndex(photos.findIndex((row) => row.id === params.id));
     setToggleUpdateRows(false);
-    let interval;
-    if (toggleUpdateRow) {
-      selected = params.id;
-      interval = setInterval(() => {
-        updatePhoto(selected);
-      }, 2000);
+    if (params.id === photos[newIndex]?.id) {
+      setToggleRow(!toggleRow);
     } else {
-      clearInterval(interval);
+      clearInterval(rowInterval);
+      setToggleRow(true);
     }
   };
+
+  useEffect(() => {
+    if (toggleRow) {
+      setRowInterval(
+        setInterval(() => {
+          updatePhoto(photos[newIndex].id);
+        }, 2000)
+      );
+    } else {
+      clearInterval(rowInterval);
+    }
+
+    return () => {
+      clearInterval(rowInterval);
+    };
+  }, [toggleRow, newIndex, photos]);
 
   const updatePhotos = useStore((state) => state.updatePhotos);
   useEffect(() => {
@@ -122,12 +135,11 @@ export const Table = ({ photos }) => {
       },
     },
   ];
-
   return (
     <ClickAwayListener
       onClickAway={() => {
         setToggleUpdateRows(!toggleUpdateRows);
-        toggleUpdateRow = false;
+        setToggleRow(false);
       }}
     >
       <DataGrid
@@ -138,7 +150,7 @@ export const Table = ({ photos }) => {
         rowsPerPageOptions={[20]}
         disableColumnMenu
         isCellEditable={(params) => params.row.id === editId}
-        onCellClick={handleUpdatePhoto}
+        onCellClick={(params) => handleUpdatePhoto(params)}
         // onCellFocusOut={() => setToggleUpdateRow(false)}
       />
     </ClickAwayListener>
