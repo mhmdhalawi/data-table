@@ -67,10 +67,12 @@ export const Table = ({ photos }) => {
   const deletePhoto = useStore((state) => state.deletePhoto);
 
   const handleEdit = (cellValues) => {
+    setToggleRow(false);
     setEditId(cellValues.id);
   };
 
   const handleDelete = (cellValues) => {
+    setToggleRow(false);
     deletePhoto(cellValues.id);
   };
 
