@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { DataGridPro } from '@mui/x-data-grid-pro';
 
 import { Button } from '@mui/material';
@@ -6,6 +6,13 @@ import { useStore } from '../store';
 
 export const Table = ({ photos }) => {
   const [editId, setEditId] = useState('');
+
+  useEffect(() => {
+    setTimeout(() => {
+      const parent = document.getElementsByClassName('MuiDataGrid-main');
+      if (parent[0]?.children[2]) parent[0].children[2].remove();
+    }, 0);
+  }, []);
 
   const deletePhoto = useStore((state) => state.deletePhoto);
 
