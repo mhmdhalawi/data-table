@@ -1,18 +1,34 @@
 import { useState, useEffect } from 'react';
-import { DataGridPro } from '@mui/x-data-grid-pro';
+import { DataGrid } from '@mui/x-data-grid';
+import ClickAwayListener from '@mui/material/ClickAwayListener';
 
 import { Button } from '@mui/material';
 import { useStore } from '../store';
 
 export const Table = ({ photos }) => {
+  const [rows, setRows] = useState(photos);
+
+  const [toggleUpdateRows, setToggleUpdateRows] = useState(true);
+
   const [editId, setEditId] = useState('');
 
+  const updatePhotos = useStore((state) => state.updatePhotos);
+  let interval;
   useEffect(() => {
-    setTimeout(() => {
-      const parent = document.getElementsByClassName('MuiDataGrid-main');
-      if (parent[0]?.children[2]) parent[0].children[2].remove();
-    }, 0);
-  }, []);
+    if (toggleUpdateRows) {
+      interval = setInterval(() => {
+        updatePhotos();
+      }, 2000);
+    } else {
+      clearInterval(interval);
+    }
+
+    return () => clearInterval(interval);
+  }, [toggleUpdateRows]);
+
+  useEffect(() => {
+    setRows(photos);
+  }, [photos]);
 
   const deletePhoto = useStore((state) => state.deletePhoto);
 
@@ -87,15 +103,20 @@ export const Table = ({ photos }) => {
   ];
 
   return (
-    <DataGridPro
-      sx={{ width: '100%' }}
-      columns={columns}
-      rows={photos}
-      pageSize={20}
-      rowsPerPageOptions={[20]}
-      disableColumnMenu
-      isCellEditable={(params) => params.row.id === editId}
-      pagination
-    />
+    <ClickAwayListener
+      onClickAway={() => {
+        setToggleUpdateRows(!toggleUpdateRows);
+      }}
+    >
+      <DataGrid
+        sx={{ width: '100%' }}
+        columns={columns}
+        rows={rows}
+        pageSize={20}
+        rowsPerPageOptions={[20]}
+        disableColumnMenu
+        isCellEditable={(params) => params.row.id === editId}
+      />
+    </ClickAwayListener>
   );
 };
