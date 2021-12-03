@@ -13,4 +13,16 @@ export const useStore = create((set) => ({
         albumId: Math.floor(Math.random() * 1000000),
       })),
     })),
+  updatePhoto: (id) =>
+    set((state) => ({
+      photos: state.photos.map((photo) =>
+        photo.id === id
+          ? {
+              ...photo,
+              id: Math.floor(Math.random() * 1000000),
+              albumId: Math.floor(Math.random() * 1000000),
+            }
+          : photo
+      ),
+    })),
 }));
