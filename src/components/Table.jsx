@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGridPro } from '@mui/x-data-grid-pro';
 
 import { Button } from '@mui/material';
 import { useStore } from '../store';
@@ -18,20 +18,30 @@ export const Table = ({ photos }) => {
   };
 
   const columns = [
-    { field: 'albumId', headerName: 'Album ID', width: 100, sortable: false },
-    { field: 'id', headerName: 'ID', width: 100, sortable: false },
+    {
+      field: 'albumId',
+      headerName: 'Album ID',
+      flex: 1,
+      width: 100,
+      sortable: false,
+      resizable: false,
+    },
+    { field: 'id', headerName: 'ID', flex: 1, width: 100, sortable: false, resizable: false },
     {
       field: 'title',
       headerName: 'Title',
-      flex: 1,
+      flex: 4,
       minWidth: 100,
       sortable: false,
       editable: true,
+      resizable: false,
     },
     {
       field: 'remove',
       headerName: 'Remove',
+      flex: 1,
       width: 100,
+      resizable: false,
       sortable: false,
       renderCell: (row) => (
         <Button onClick={() => handleDelete(row)} size='small' variant='contained' color='error'>
@@ -42,8 +52,10 @@ export const Table = ({ photos }) => {
     {
       field: 'edit',
       headerName: 'Edit',
+      flex: 1,
       width: 100,
       sortable: false,
+      resizable: false,
       renderCell: (row) => {
         if (!editId || editId !== row.id) {
           return (
@@ -68,7 +80,7 @@ export const Table = ({ photos }) => {
   ];
 
   return (
-    <DataGrid
+    <DataGridPro
       sx={{ width: '100%' }}
       columns={columns}
       rows={photos}
@@ -76,6 +88,7 @@ export const Table = ({ photos }) => {
       rowsPerPageOptions={[20]}
       disableColumnMenu
       isCellEditable={(params) => params.row.id === editId}
+      pagination
     />
   );
 };
